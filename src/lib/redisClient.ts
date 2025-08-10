@@ -12,35 +12,35 @@ export async function connectRedis() {
   }
 }
 
-export async function addUserMessage(phone: string, message: string) {
-  const key = `user:${phone}:history`;
+export async function addUserMessage(id: string, message: string) {
+  const key = `user:${id}:history`;
   await redisClient.rPush(key, message);
   await redisClient.expire(key, 3600);
 }
 
-export async function getUserHistory(phone: string): Promise<string[]> {
-  const key = `user:${phone}:history`;
+export async function getUserHistory(id: string): Promise<string[]> {
+  const key = `user:${id}:history`;
   return (await redisClient.lRange(key, 0, -1)) || [];
 }
 
-export async function clearUserHistory(phone: string) {
-  const key = `user:${phone}:history`;
+export async function clearUserHistory(id: string) {
+  const key = `user:${id}:history`;
   await redisClient.del(key);
 }
 
-export async function addBotMessage(phone: string, message: string) {
-  const key = `bot:${phone}:history`;
+export async function addBotMessage(id: string, message: string) {
+  const key = `bot:${id}:history`;
   await redisClient.rPush(key, message);
   await redisClient.expire(key, 3600);
 }
 
-export async function getBotHistory(phone: string): Promise<string[]> {
-  const key = `bot:${phone}:history`;
+export async function getBotHistory(id: string): Promise<string[]> {
+  const key = `bot:${id}:history`;
   return (await redisClient.lRange(key, 0, -1)) || [];
 }
 
-export async function clearBotHistory(phone: string) {
-  const key = `bot:${phone}:history`;
+export async function clearBotHistory(id: string) {
+  const key = `bot:${id}:history`;
   await redisClient.del(key);
 }
 

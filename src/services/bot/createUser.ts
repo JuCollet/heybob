@@ -11,7 +11,6 @@ import { addUserIfNotExists } from "../user";
 import { basePromptContext } from "./common";
 
 const isValidGender = (g: any) => ["m", "f", "x"].includes(g);
-const isValidAge = (a: any) => Number.isInteger(a) && a > 0 && a < 120;
 const isValidWeight = (w: any) => Number.isInteger(w) && w > 20 && w < 300;
 
 export const handleUserCreation = async ({
@@ -40,8 +39,8 @@ export const handleUserCreation = async ({
       {
         role: "system",
         content: `
-          L'utilisateur doit donner son âge, son genre et son poids.
-          Réponds sous forme de json avec les champs "age" (int), "gender" (m, f ou x), "weight" (int - en kilogrammes) avec null comme valeur si les infos manquent, 
+          L'utilisateur doit donner son genre et son poids.
+          Réponds sous forme de json avec les champs "gender" (m, f ou x), "weight" (int - en kilogrammes) avec null comme valeur si les infos manquent, 
           ou si les valeurs ne correspondent pas à ce qu'on attend ou semblent incorrectes.
         `,
       },
@@ -59,7 +58,6 @@ export const handleUserCreation = async ({
 
   if (
     userInfo &&
-    isValidAge(userInfo.age) &&
     isValidGender(userInfo.gender) &&
     isValidWeight(userInfo.weight)
   ) {
@@ -68,8 +66,7 @@ export const handleUserCreation = async ({
     await addUserIfNotExists({
       phone_number: phoneNumber,
       weight: userInfo.weight,
-      sex: userInfo.gender,
-      age: userInfo.age,
+      gender: userInfo.gender,
     });
 
     const feedback = await client.chat.completions.create({
@@ -105,7 +102,7 @@ export const handleUserCreation = async ({
         content: `
           ${basePromptContext}
           Pour l’instant, ta tâche est uniquement d’enregistrer les données personnelles de l’utilisateur, qui n’est pas encore connu.
-          Demande-lui son âge, son sexe et son poids.
+          Demande-lui son genre et son poids.
           Si l’utilisateur a déjà fourni certaines informations, demande celles qui manquent ou de confirmer celles qui semblent incorrectes.          
         `,
       },

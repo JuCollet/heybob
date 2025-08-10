@@ -2,8 +2,7 @@ exports.up = (pgm) => {
   pgm.createTable("users", {
     id: "id",
     phone_number: { type: "text", notNull: true, unique: true },
-    age: "integer",
-    sex: "text",
+    gender: "text",
     weight: "float8",
   });
 };
