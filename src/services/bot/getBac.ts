@@ -1,6 +1,6 @@
 import { getEstimateBACFromLogs } from "../../utils/bac";
-import { getDrinksLogsLast24h } from "../drink";
-import { User } from "../user";
+import { getDrinksLogsLast24h } from "../../db/drink";
+import { User } from "../../db/user";
 import { client } from "./client";
 import { basePromptContext } from "./common";
 
@@ -21,7 +21,7 @@ export const getBac = async ({ user }: { user: User }): Promise<string> => {
             Informe l'utilisateur de ce résultat, en précisant que c'est une estimation basée sur les données enregistrées,  
             que cela ne remplace pas un test d'alcoolémie officiel,  
             et qu'il ne faut jamais prendre le volant après avoir consommé de l'alcool.
-            Informe que la limite légale en Belgique pour conduire est de 0,5 g/L.
+            Informe des limites légales en Belgique.
         `,
       },
     ],

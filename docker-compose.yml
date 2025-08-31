@@ -28,16 +28,46 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+      PORT: 3001
     depends_on:
       - db
     ports:
-      - "3000:3000"
+      - "3001:3001"
     command: >
       sh -c "
         npm run migrate-up &&
         npm run start
       "
     restart: unless-stopped
-
+  messenger:
+    image: avoylenko/wwebjs-api:latest
+    container_name: wwebjs-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Core Configuration
+      - BASE_WEBHOOK_URL=http://app:3001/messenger-hook
+      - MAX_ATTACHMENT_SIZE=5000000 # In bytes (5MB)
+      - SET_MESSAGES_AS_SEEN=TRUE
+      - ENABLE_LOCAL_CALLBACK_EXAMPLE=TRUE
+      - ENABLE_SWAGGER_ENDPOINT=TRUE
+      - RECOVER_SESSIONS=TRUE
+      
+      # Security Settings
+      # - API_KEY=${WWEBJS_API_KEY}
+      
+      # Rate Limiting Configuration
+      - RATE_LIMIT_MAX=1000 # Maximum connections per time window
+      # - RATE_LIMIT_WINDOW_MS=1000 # Time window in milliseconds
+      
+      # WhatsApp Web Configuration
+      # - WEB_VERSION='2.2328.5' # Specific WhatsApp Web version
+      # - WEB_VERSION_CACHE_TYPE=none # Options: local, remote, none
+      
+      # Callback Configuration
+      - DISABLED_CALLBACKS=message_ack|message_reaction
+    volumes:
+      - ./sessions:/usr/src/app/sessions
 volumes:
   db_data:

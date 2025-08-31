@@ -1,5 +1,24 @@
-import { DrinkLog } from "../services/drink";
-import { User } from "../services/user";
+import { DrinkLog } from "../db/drink";
+import { User } from "../db/user";
+
+export function getTimeToBacTarget({
+  bacInitial,
+  bacTarget = 0.5,
+  gender,
+}: {
+  bacInitial: number;
+  bacTarget: number;
+  gender: User["gender"];
+}): Date | null {
+  const eliminationRate = gender === "f" ? 0.1 : 0.15;
+
+  if (bacInitial <= bacTarget) {
+    return null;
+  }
+
+  const hoursNeeded = (bacInitial - bacTarget) / eliminationRate;
+  return new Date(new Date().getTime() + hoursNeeded * 60 * 60 * 1000);
+}
 
 export function getEstimateBACFromLogs(
   drinks: DrinkLog[],

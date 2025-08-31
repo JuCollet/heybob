@@ -1,10 +1,12 @@
 import "dotenv/config";
-import { getUserByPhone } from "../user";
+import { getUserByPhone } from "../../db/user";
 import { handleUserCreation } from "./createUser";
 import { getIntent, ActionType } from "./getIntent";
 import { clearBotHistory, clearUserHistory } from "../../lib/redisClient";
 import { logDrink } from "./logDrink";
 import { getBac } from "./getBac";
+import { createBacReminder } from "./createBacReminder";
+import { deleteBacReminder } from "./deleteBacReminder";
 
 export const processMessage = async ({
   message,
@@ -34,6 +36,10 @@ export const processMessage = async ({
       return intent.message ?? "";
     case ActionType.BacRequest:
       return await getBac({ user });
+    case ActionType.CreateReminder:
+      return await createBacReminder({ user });
+    case ActionType.CancelReminder:
+      return await deleteBacReminder({ user });
     default:
       return intent.message ?? "";
   }

@@ -1,5 +1,5 @@
-import { addDrinkLog } from "../drink";
-import { User } from "../user";
+import { addDrinkLog } from "../../db/drink";
+import { User } from "../../db/user";
 
 type Drink = {
   drinkType: string;

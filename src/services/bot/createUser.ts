@@ -7,7 +7,7 @@ import {
   getBotHistory,
   getUserHistory,
 } from "../../lib/redisClient";
-import { addUserIfNotExists } from "../user";
+import { addUserIfNotExists } from "../../db/user";
 import { basePromptContext } from "./common";
 
 const isValidGender = (g: any) => ["m", "f", "x"].includes(g);
