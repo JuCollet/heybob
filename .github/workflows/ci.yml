@@ -21,9 +21,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          # Short commit hash for unique Docker tag
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Set IMAGE_TAG
+        run: |
+          IMAGE_TAG="${VERSION}-${COMMIT_HASH}"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Docker meta
         id: meta
@@ -33,7 +37,7 @@ jobs:
             jucollet/hey-bob
           tags: |
             ${{ env.VERSION }}
-            ${{ env.VERSION }}-${{ env.COMMIT_HASH }}
+            ${{ env.IMAGE_TAG }}
             type=ref,event=branch
             type=ref,event=pr
 
@@ -51,3 +55,19 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Checkout heybob-deploy repo
+        uses: actions/checkout@v4
+        with:
+          repository: jucollet/heybob-deploy
+          path: heybob-deploy
+
+      - name: Update prod image version
+        run: |
+          sed -i "s|newTag: .*|newTag: ${{ env.IMAGE_TAG }}|g" heybob-deploy/prod/kustomization.yaml
+          cd heybob-deploy
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add prod/kustomization.yaml
+          git commit -m "Update prod image to ${{ env.IMAGE_TAG }}"
+          git push
