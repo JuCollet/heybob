@@ -30,7 +30,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name/app
+            jucollet/hey-bob
           tags: |
             ${{ env.VERSION }}
             ${{ env.VERSION }}-${{ env.COMMIT_HASH }}
