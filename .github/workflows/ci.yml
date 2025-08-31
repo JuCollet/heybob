@@ -41,6 +41,9 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -55,7 +58,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
 
       - name: Checkout heybob-deploy repo
         if: github.event_name != 'pull_request'
