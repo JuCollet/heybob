@@ -55,6 +55,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
 
       - name: Checkout heybob-deploy repo
         if: github.event_name != 'pull_request'
