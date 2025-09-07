@@ -6,7 +6,7 @@ import {
   getBotHistory,
   getUserHistory,
 } from "../../lib/redisClient";
-import { basePromptContext } from "./common";
+import { context } from "../../prompts/context";
 
 export enum ActionType {
   LogDrink = "log_drink",
@@ -52,42 +52,45 @@ export const getIntent = async ({
       {
         role: "system",
         content: `
-          ${basePromptContext}
+          ${context}
 
           L’utilisateur t’envoie un message : tu dois déterminer quelle action parmi les suivantes il veut entreprendre.
 
           ---
-            1. **Enregistrer un ou plusieurs verres consommés**
-            Informations à obtenir :
-            - type de boisson ("drinkType", varchar(50))
-            - quantité en cl ("quantity", integer)
-            - pourcentage d’alcool ("percentage", numeric(5,2))
-            - heure de consommation ("date", Date ISO 8601, heure GMT)
+          1. **Enregistrer un ou plusieurs verres consommés**  
+          Informations à obtenir :
+          - type de boisson ("drinkType", varchar(50))
+          - quantité en cl ("quantity", integer)
+          - pourcentage d’alcool ("percentage", numeric(5,2))
+          - heure de consommation ("date", Date ISO 8601, heure UTC)
 
-            Si la quantité ou le pourcentage d'alcool manquent, estime-les à partir de valeurs moyennes ou demande plus de précisions si tu n'es pas sûr.
-            Voici quelques quantités moyennes :
+          Règles importantes :
+          - La propriété "date" doit toujours être enregistrée en ISO 8601 au format UTC (ex. "2025-09-07T18:30:00Z").
+          - Si l'utilisateur indique l'heure de consommation relative (ex. "il y a 5 minutes"), **soustraire le temps indiqué à l'heure locale de Belgique** pour obtenir l'heure exacte de consommation, puis convertir en UTC ISO 8601. **Ne jamais ajouter le temps.**
+          - Dans le champ "message", indique quelle boisson a été enregistrée et à quelle heure, en convertissant l'heure au fuseau horaire Europe/Brussels (CET/CEST selon la saison), sans préciser à l'utilisateur le fuseau horaire choisi.
+          - Si la quantité ou le pourcentage d’alcool manquent, estime-les à partir de valeurs moyennes ou demande plus de précisions si tu n'es pas sûr.
+            Valeurs moyennes :
             - shot : 4 cl
             - verre de vin : 12,5 cl
             - canette : 33 cl
             - bouteille de vin : 70 cl
+          - Si tu n'as pas l'heure précise ou si l'utilisateur ne donne pas de repère temporel, **ne déclenche pas cette action.**
+          - Une boisson par élément dans l'array "drinks".
+          - **Ne jamais rajouter de texte supplémentaire dans le message**, ne pas faire de phrases de politesse ou d'ouverture, seulement l'information demandée.
 
-            Si tu n'as pas l'heure précise, ne déclanche pas cette action.
-            Une boisson par élément dans l'array "drinks".
-            Dans le "message" retourné, répète précisément toutes les boissons qui ont été enregistrées et une copie de l'heure de consommation, convertie à l'heure belge (fuseau horaire Europe/Brussels).
-
-            JSON attendu :
-            {
-              "action_type": "${ActionType.LogDrink}",
-              "drinks": [
-                {
-                  "drinkType": "...",
-                  "quantity": ...,
-                  "percentage": ...,
-                  "date": "...",
-                }
-              ],
-              "message": "..."
-            }
+          JSON attendu :
+          {
+            "action_type": "${ActionType.LogDrink}",
+            "drinks": [
+              {
+                "drinkType": "...",
+                "quantity": ...,
+                "percentage": ...,
+                "date": "..." // ISO 8601 UTC exact
+              }
+            ],
+            "message": "..." // Description de la boisson enregistrée et heure convertie à l'heure belge
+          }
 
           2. **Demander sa consommation d’alcool**
             JSON attendu :

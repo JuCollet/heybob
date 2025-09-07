@@ -2,7 +2,7 @@ import { getEstimateBACFromLogs, getTimeToBacTarget } from "../../utils/bac";
 import { getDrinksLogsLast24h } from "../../db/drink";
 import { User } from "../../db/user";
 import { client } from "./client";
-import { basePromptContext } from "./common";
+import { context } from "../../prompts/context";
 import {
   createReminder,
   deleteReminder,
@@ -35,7 +35,7 @@ export const createBacReminder = async ({
         {
           role: "system",
           content: `
-            ${basePromptContext}
+            ${context}
             Le taux d'alcoolémie estimé de l'utilisateur est de ${bacFormatted}.  
             Informe l'utilisateur qu'il semble déjà avoir un taux d'alcoolémie inférieur à la limite belge pour conduire.
             Précise que c'est une estimation basée sur les données enregistrées,
@@ -68,7 +68,7 @@ export const createBacReminder = async ({
       {
         role: "system",
         content: `
-            ${basePromptContext}
+            ${context}
             Le taux d'alcoolémie estimé de l'utilisateur est de ${bacFormatted}.  
             Informe l'utilisateur qu'un rappel a été programmé à ${timeToSafeBack.toLocaleString("fr-BE", { timeZone: "Europe/Brussels" })}, heure belge, 
             à laquelle le taux d'alcoolémie devrait avoir redescendu en dessous de la limite légale pour conduire en Belgique.

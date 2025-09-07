@@ -6,7 +6,8 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
     "migrate-up": "node-pg-migrate up",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "openai": "^5.12.2",
     "pg": "^8.16.3",
     "redis": "^5.8.0",
+    "vitest": "^3.2.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {

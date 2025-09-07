@@ -1,6 +1,6 @@
 import { User } from "../../db/user";
 import { client } from "./client";
-import { basePromptContext } from "./common";
+import { context } from "../../prompts/context";
 import { deleteReminder, getUserReminders } from "../../db/reminder";
 
 export const deleteBacReminder = async ({
@@ -21,7 +21,7 @@ export const deleteBacReminder = async ({
         {
           role: "system",
           content: `
-            ${basePromptContext}
+            ${context}
             Informe l'utilisateur que les rappels programmés pour le prévenir quand il pourra prendre la route ont été supprimés.
         `,
         },

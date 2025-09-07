@@ -46,11 +46,10 @@ export function getEstimateBACFromLogs(
       alcoholDensity;
 
     const bacRaw = alcoholGrams / (r * user.weight);
-    const bacAfterElimination = bacRaw - beta * hoursElapsed;
 
-    if (bacAfterElimination > 0) {
-      totalBAC += bacAfterElimination;
-    }
+    const bacAfterElimination = Math.max(0, bacRaw - beta * hoursElapsed);
+
+    totalBAC += bacAfterElimination;
   }
 
   return totalBAC;

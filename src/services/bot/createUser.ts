@@ -8,7 +8,7 @@ import {
   getUserHistory,
 } from "../../lib/redisClient";
 import { addUserIfNotExists } from "../../db/user";
-import { basePromptContext } from "./common";
+import { context } from "../../prompts/context";
 
 const isValidGender = (g: any) => ["m", "f", "x"].includes(g);
 const isValidWeight = (w: any) => Number.isInteger(w) && w > 20 && w < 300;
@@ -76,7 +76,7 @@ export const handleUserCreation = async ({
         {
           role: "system",
           content: `
-            ${basePromptContext}
+            ${context}
             L'utilisateur a donné toutes les infos, remercie-le et dis-lui qu'il peut commencer à te dire 
             ce qu'il boit pour avoir une estimation de son taux d'alcoolémie ou pour recevoir un message quand il peut reprendre la route.
           `,
@@ -100,7 +100,7 @@ export const handleUserCreation = async ({
       {
         role: "system",
         content: `
-          ${basePromptContext}
+          ${context}
           Pour l’instant, ta tâche est uniquement d’enregistrer les données personnelles de l’utilisateur, qui n’est pas encore connu.
           Demande-lui son genre et son poids.
           Si l’utilisateur a déjà fourni certaines informations, demande celles qui manquent ou de confirmer celles qui semblent incorrectes.          
