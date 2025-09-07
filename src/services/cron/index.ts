@@ -5,7 +5,7 @@ import { getUserById } from "../../db/user";
 import { getDrinksLogsLast24h } from "../../db/drink";
 import { getEstimateBACFromLogs } from "../../utils/bac";
 import { createBacReminder, SAFE_BAC_TARGET } from "../bot/createBacReminder";
-import { basePromptContext } from "../bot/common";
+import { context } from "../../prompts/context";
 import { deleteBacReminder } from "../bot/deleteBacReminder";
 
 cron.schedule("* * * * *", async () => {
@@ -34,7 +34,7 @@ cron.schedule("* * * * *", async () => {
           {
             role: "system",
             content: `
-            ${basePromptContext}
+            ${context}
             Le taux d'alcoolémie estimé de l'utilisateur est de ${bacFormatted}.  
             Informe l'utilisateur que son taux d'alcoolémie estimé pourrait être inférieur à la limite légale en Belgique 
             et qu'il pourrait être en mesure de reprendre la route.
